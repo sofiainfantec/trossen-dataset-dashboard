@@ -267,21 +267,35 @@ col4.metric(
 st.divider()
 
 
-st.subheader(
-    "Episode Duration Distribution"
+st.subheader("Episode Duration by Recording")
+
+plot_df = df.copy()
+plot_df["recording_index"] = range(1, len(plot_df) + 1)
+
+median_duration = plot_df["duration_seconds"].median()
+
+fig = px.scatter(
+    plot_df,
+    x="recording_index",
+    y="duration_seconds",
+    hover_data=["episode", "duration"],
+    title="Episode Duration by Recording",
+    labels={
+        "recording_index": "Recording",
+        "duration_seconds": "Duration (seconds)",
+    },
 )
 
-fig = px.histogram(
-    df,
-    x="duration_seconds",
-    nbins=20,
-    title="Distribution of Episode Duration"
+fig.add_hline(
+    y=median_duration,
+    line_dash="dash",
+    annotation_text=f"Median: {format_duration(median_duration)}",
+    annotation_position="top left",
 )
 
-st.plotly_chart(
-    fig,
-    use_container_width=True
-)
+fig.update_traces(mode="markers+lines")
+
+st.plotly_chart(fig, use_container_width=True)
 
 
 st.subheader(
